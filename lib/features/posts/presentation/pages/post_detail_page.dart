@@ -8,24 +8,55 @@ class PostDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Post Details')),
+      appBar: AppBar(
+        title: const Text('Post Details'),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(post.title, style: Theme.of(context).textTheme.headlineSmall),
-            const SizedBox(height: 12),
-            Text(post.body, style: Theme.of(context).textTheme.bodyLarge),
-            const Divider(height: 32),
-            Text('ID: ${post.id} • User: ${post.userId}',
-                style: Theme.of(context).textTheme.bodyMedium),
-          ],
+        child: Card(
+          elevation: 1,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title
+                Text(
+                  post.title,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                const SizedBox(height: 12),
+
+                // Body
+                Text(
+                  post.body,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        height: 1.4,
+                      ),
+                ),
+                const SizedBox(height: 20),
+
+                // Meta info
+                Text(
+                  'ID: ${post.id} • User: ${post.userId}',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.grey[600],
+                      ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 }
+
 
 
 
