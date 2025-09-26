@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 
 class AppTheme {
@@ -120,13 +121,17 @@ class AppTheme {
         foregroundColor: scheme.onSurface,
       ),
       dividerTheme: base.dividerTheme.copyWith(color: scheme.outlineVariant),
-      cardTheme: base.cardTheme?.copyWith(
+
+      
+      cardTheme: base.cardTheme.copyWith(
         surfaceTintColor: scheme.surfaceTint,
       ),
+
       progressIndicatorTheme: ProgressIndicatorThemeData(color: scheme.primary),
     );
   }
 }
+
 
 
 
