@@ -10,9 +10,10 @@ This project demonstrates:
 - Displaying them in a list with detail pages
 - Using **flutter_bloc (Cubit)** for state management
 - Handling **loading**, **error + Retry**, and **success** states
-- Implementing a **Material 3** theme
+- Implementing a **Material 3** theme with custom styles
 - Writing unit and bloc/widget tests
 - Following clean architecture principles with clear layering
+- Automated CI (GitHub Actions) for `flutter analyze` + `flutter test`
 
 ---
 
@@ -77,18 +78,14 @@ Test files:
 The app demonstrates **three UI states** with `flutter_bloc`:
 
 ### 1. Loading State
-
 * When the app starts or user taps **Retry**, the UI shows:
-
   * A centered `CircularProgressIndicator`
   * A text label: *"Loading posts..."*
 
 ---
 
 ### 2. Error State + Retry
-
 * If the API request fails (e.g., set `kUseBadPath = true` in `posts_api.dart`), the UI shows:
-
   * An error icon  
   * The error message (e.g., `DioError: 404 Not Found`)  
   * A **Retry** button to reload  
@@ -96,9 +93,7 @@ The app demonstrates **three UI states** with `flutter_bloc`:
 ---
 
 ### 3. Success State
-
 * When the API request succeeds:
-
   * A list of posts (`title` + `body preview`)  
   * Pull-to-refresh support  
   * Tap on a post → navigate to a **detail screen** with full content  
@@ -107,13 +102,29 @@ The app demonstrates **three UI states** with `flutter_bloc`:
 
 ## Reproduce Error State
 
-To test the error + retry flow, open `lib/features/posts/data/sources/posts_api.dart` and set:
+To test the error + retry flow, open:
+
+```
+lib/features/posts/data/sources/posts_api.dart
+```
+
+Set:
 
 ```dart
 static bool kUseBadPath = true;
 ```
 
-Run the app again, and the request will fail, showing the error UI with a Retry button.
+Run the app again → the request will fail and the error UI will appear with a Retry button.
+
+---
+
+## CI (Continuous Integration)
+
+This repository includes a GitHub Actions workflow:
+
+- Runs **`flutter analyze`** and **`flutter test`** automatically on each push/PR  
+- Ensures code quality and test reliability before merging  
+- ✅ Passing builds are shown with a green badge in the repository
 
 ---
 
@@ -122,11 +133,7 @@ Run the app again, and the request will fail, showing the error UI with a Retry 
 * Comments are included throughout the code for clarity.  
 * A short artificial delay (400–800ms) is added in `PostsCubit` to make the loading indicator visible.  
 * For production, this delay can be removed or reduced.  
-* Static analysis (`flutter analyze`) and tests are also run automatically on each push/PR via GitHub Actions.
- 
-
----
+* You can also run `flutter analyze` locally to double-check static analysis.  
 
 
-```
 
