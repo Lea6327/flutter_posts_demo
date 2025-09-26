@@ -126,7 +126,7 @@ Run the app again, and the request will fail, showing the error UI with a Retry 
 
 ---
 
-
+* Static analysis (`flutter analyze`) and tests are also run automatically on each push/PR via GitHub Actions.
 
 ```
 
