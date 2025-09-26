@@ -122,11 +122,11 @@ Run the app again, and the request will fail, showing the error UI with a Retry 
 * Comments are included throughout the code for clarity.  
 * A short artificial delay (400–800ms) is added in `PostsCubit` to make the loading indicator visible.  
 * For production, this delay can be removed or reduced.  
+* Static analysis (`flutter analyze`) and tests are also run automatically on each push/PR via GitHub Actions.
  
 
 ---
 
-* Static analysis (`flutter analyze`) and tests are also run automatically on each push/PR via GitHub Actions.
 
 ```
 
