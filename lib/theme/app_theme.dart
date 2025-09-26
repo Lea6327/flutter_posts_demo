@@ -1,8 +1,7 @@
-// lib/theme/app_theme.dart
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  // 改这里即可快速换一套品牌色
+  // Change this seed color to quickly switch to a different brand palette
   static const Color _seed = Colors.indigo;
 
   /// Light Theme (Material 3)
@@ -16,6 +15,8 @@ class AppTheme {
       useMaterial3: true,
       colorScheme: scheme,
       scaffoldBackgroundColor: scheme.surface,
+
+      // AppBar styling
       appBarTheme: AppBarTheme(
         backgroundColor: scheme.surface,
         foregroundColor: scheme.onSurface,
@@ -26,12 +27,16 @@ class AppTheme {
           fontWeight: FontWeight.w700,
         ),
       ),
+
+      // Typography settings
       textTheme: const TextTheme(
         titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
         titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
         bodyLarge: TextStyle(fontSize: 16, height: 1.3),
         bodyMedium: TextStyle(fontSize: 14, height: 1.35),
       ),
+
+      // Buttons
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -48,6 +53,8 @@ class AppTheme {
           ),
         ),
       ),
+
+      // Input fields
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -57,11 +64,15 @@ class AppTheme {
           borderSide: BorderSide(color: scheme.primary, width: 2),
         ),
       ),
+
+      // Dividers
       dividerTheme: DividerThemeData(
         color: scheme.outlineVariant,
         thickness: 1,
         space: 0,
       ),
+
+      // ListTile (used in lists)
       listTileTheme: ListTileThemeData(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         titleTextStyle: TextStyle(
@@ -75,7 +86,8 @@ class AppTheme {
           height: 1.35,
         ),
       ),
-      // ✅ 新 API：CardThemeData（不要再用 CardTheme）
+
+      // ✅ Card styling (Material 3)
       cardTheme: const CardThemeData(
         elevation: 1,
         margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -83,6 +95,8 @@ class AppTheme {
           borderRadius: BorderRadius.all(Radius.circular(16)),
         ),
       ),
+
+      // Progress indicators
       progressIndicatorTheme: ProgressIndicatorThemeData(
         color: scheme.primary,
       ),
@@ -96,7 +110,7 @@ class AppTheme {
       brightness: Brightness.dark,
     );
 
-    // 在 light 基础上复制一份，覆盖必要差异
+    // Copy from light theme and override dark-specific differences
     final base = light;
     return base.copyWith(
       colorScheme: scheme,
@@ -107,7 +121,6 @@ class AppTheme {
       ),
       dividerTheme: base.dividerTheme.copyWith(color: scheme.outlineVariant),
       cardTheme: base.cardTheme?.copyWith(
-        // M3 下 cardTheme 也是 CardThemeData
         surfaceTintColor: scheme.surfaceTint,
       ),
       progressIndicatorTheme: ProgressIndicatorThemeData(color: scheme.primary),

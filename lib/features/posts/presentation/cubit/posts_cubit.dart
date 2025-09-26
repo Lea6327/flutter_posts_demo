@@ -15,7 +15,6 @@ class PostsCubit extends Cubit<PostsState> {
 
     // 2. Add a short artificial delay so that the loading indicator
     //    is visible for demonstration purposes.
-    //    In real apps, you can remove or shorten this.
     await Future.delayed(const Duration(milliseconds: 400));
 
     try {
@@ -27,7 +26,6 @@ class PostsCubit extends Cubit<PostsState> {
     } catch (e) {
       // 5. If an error occurs, print it (for debugging)
       //    and emit a failure state with the error message
-      // ignore: avoid_print
       print('LOAD ERROR: $e');
       emit(PostsState.failure(e.toString()));
     }

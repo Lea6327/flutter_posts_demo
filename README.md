@@ -1,6 +1,3 @@
-
-
-````markdown
 # Flutter Posts Demo
 
 A minimal Flutter app built for the **Junior Flutter Developer Technical Assessment**.
@@ -29,17 +26,15 @@ flutter pub get
 # Run on Chrome (quick demo)
 flutter run -d chrome
 
-# Or run on Android / iOS
-flutter run
-````
+```
 
 ---
 
 ## Libraries
 
-* **Networking**: Dio
-* **State management**: flutter_bloc (Cubit)
-* **Testing**: flutter_test, bloc_test, mocktail
+* **Networking**: Dio  
+* **State management**: flutter_bloc (Cubit)  
+* **Testing**: flutter_test, bloc_test, mocktail  
 
 ---
 
@@ -72,8 +67,8 @@ flutter test
 
 Test files:
 
-* `test/unit/get_posts_test.dart`: unit test for the use case
-* `test/widget/posts_page_test.dart`: widget/bloc tests for loading → success/failure
+* `test/unit/get_posts_test.dart`: unit test for the use case  
+* `test/widget/posts_page_test.dart`: widget/bloc tests for loading → success/failure  
 
 ---
 
@@ -94,9 +89,9 @@ The app demonstrates **three UI states** with `flutter_bloc`:
 
 * If the API request fails (e.g., set `kUseBadPath = true` in `posts_api.dart`), the UI shows:
 
-  * An error icon
-  * The error message (e.g., `DioError: 404 Not Found`)
-  * A **Retry** button to reload
+  * An error icon  
+  * The error message (e.g., `DioError: 404 Not Found`)  
+  * A **Retry** button to reload  
 
 ---
 
@@ -104,21 +99,33 @@ The app demonstrates **three UI states** with `flutter_bloc`:
 
 * When the API request succeeds:
 
-  * A list of posts (`title` + `body preview`)
-  * Pull-to-refresh support
-  * Tap on a post → navigate to a **detail screen** with full content
+  * A list of posts (`title` + `body preview`)  
+  * Pull-to-refresh support  
+  * Tap on a post → navigate to a **detail screen** with full content  
+
+---
+
+## Reproduce Error State
+
+To test the error + retry flow, open `lib/features/posts/data/sources/posts_api.dart` and set:
+
+```dart
+static bool kUseBadPath = true;
+```
+
+Run the app again, and the request will fail, showing the error UI with a Retry button.
 
 ---
 
 ## Notes
 
-* Comments are included throughout the code for clarity.
-* A short artificial delay (400–800ms) is added in `PostsCubit` to make the loading indicator visible.
-* For production, this delay can be removed or reduced.
+* Comments are included throughout the code for clarity.  
+* A short artificial delay (400–800ms) is added in `PostsCubit` to make the loading indicator visible.  
+* For production, this delay can be removed or reduced.  
+ 
 
+---
 
-
-```
 
 
 ```

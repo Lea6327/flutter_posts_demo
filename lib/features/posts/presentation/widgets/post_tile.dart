@@ -1,4 +1,3 @@
-// lib/features/posts/presentation/widgets/post_tile.dart
 import 'package:flutter/material.dart';
 import '../../domain/entities/post_entity.dart';
 

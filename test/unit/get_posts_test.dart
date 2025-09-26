@@ -1,8 +1,8 @@
-// test/unit/get_posts_test.dart
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-// imports 按你的实际路径（features/posts/...）
+
 import 'package:flutter_posts_demo/features/posts/domain/entities/post_entity.dart';
 import 'package:flutter_posts_demo/features/posts/domain/repositories/posts_repository.dart';
 import 'package:flutter_posts_demo/features/posts/domain/usecases/get_posts.dart';
@@ -15,14 +15,14 @@ void main() {
 
   setUp(() {
     repo = _MockPostsRepository();
-    getPosts = GetPosts(repo); // class GetPosts { Future<List<PostEntity>> call() ... }
+    getPosts = GetPosts(repo); // class GetPosts 
   });
 
   test('GetPosts returns list from repository', () async {
     // Arrange
     when(() => repo.getPosts()).thenAnswer(
       (_) async => [
-        PostEntity(id: 1, userId: 1, title: 'ok', body: 'body'), // 👈 必填 userId
+        PostEntity(id: 1, userId: 1, title: 'ok', body: 'body'), // userId
       ],
     );
 
