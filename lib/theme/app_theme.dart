@@ -1,3 +1,9 @@
+// lib/theme/app_theme.dart
+//
+// Material 3 light/dark themes with a seed color.
+// - Uses CardThemeData (not CardTheme) for compatibility
+// - Avoids unnecessary casts
+// - Keeps typography, buttons, inputs, dividers, list tiles consistent
 
 import 'package:flutter/material.dart';
 
@@ -16,6 +22,7 @@ class AppTheme {
       colorScheme: scheme,
       scaffoldBackgroundColor: scheme.surface,
 
+      // AppBar
       appBarTheme: AppBarTheme(
         backgroundColor: scheme.surface,
         foregroundColor: scheme.onSurface,
@@ -28,6 +35,7 @@ class AppTheme {
         ),
       ),
 
+      // Typography
       textTheme: const TextTheme(
         titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
         titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
@@ -35,6 +43,7 @@ class AppTheme {
         bodyMedium: TextStyle(fontSize: 14, height: 1.35),
       ),
 
+      // Buttons
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -48,6 +57,7 @@ class AppTheme {
         ),
       ),
 
+      // Inputs
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         focusedBorder: OutlineInputBorder(
@@ -56,12 +66,14 @@ class AppTheme {
         ),
       ),
 
+      // Dividers
       dividerTheme: DividerThemeData(
         color: scheme.outlineVariant,
         thickness: 1,
         space: 0,
       ),
 
+      // ListTile
       listTileTheme: ListTileThemeData(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         titleTextStyle: TextStyle(
@@ -76,7 +88,7 @@ class AppTheme {
         ),
       ),
 
-      // ✅ Use CardThemeData for your Flutter version
+      // Cards (use CardThemeData for your Flutter version)
       cardTheme: CardThemeData(
         elevation: 1.5,
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -84,6 +96,7 @@ class AppTheme {
         surfaceTintColor: scheme.surfaceTint,
       ),
 
+      // Progress indicators
       progressIndicatorTheme: ProgressIndicatorThemeData(color: scheme.primary),
     );
   }
@@ -99,6 +112,7 @@ class AppTheme {
     return base.copyWith(
       colorScheme: scheme,
       scaffoldBackgroundColor: scheme.surface,
+
       appBarTheme: base.appBarTheme.copyWith(
         backgroundColor: scheme.surface,
         foregroundColor: scheme.onSurface,
@@ -108,7 +122,9 @@ class AppTheme {
           fontWeight: FontWeight.w700,
         ),
       ),
+
       dividerTheme: base.dividerTheme.copyWith(color: scheme.outlineVariant),
+
       listTileTheme: base.listTileTheme.copyWith(
         titleTextStyle: TextStyle(
           fontSize: 16,
@@ -121,10 +137,12 @@ class AppTheme {
           height: 1.35,
         ),
       ),
-      
-      cardTheme: (base.cardTheme as CardThemeData).copyWith(
+
+      // No unnecessary cast; base.cardTheme is already CardThemeData
+      cardTheme: base.cardTheme.copyWith(
         surfaceTintColor: scheme.surfaceTint,
       ),
+
       progressIndicatorTheme: ProgressIndicatorThemeData(color: scheme.primary),
     );
   }

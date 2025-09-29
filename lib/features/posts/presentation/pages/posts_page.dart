@@ -1,19 +1,19 @@
-
-
+// lib/features/posts/presentation/pages/posts_page.dart
+//
 // Shows the posts list with proper loading, error (with Retry), and success states.
 // Uses flutter_bloc (Cubit) for state management, Material 3 theming,
 // pull-to-refresh, a debug-only "simulate error" toggle, and a simple skeleton
 // loading list for nicer UX.
 
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter/foundation.dart' show kDebugMode;
 
+import '../../data/sources/posts_api.dart'; // For the debug error toggle
 import '../../domain/entities/post_entity.dart';
 import '../cubit/posts_cubit.dart';
-import '../widgets/error_view.dart';
 import '../pages/post_detail_page.dart';
-import '../../data/sources/posts_api.dart'; // For the debug error toggle
+import '../widgets/error_view.dart';
 
 class PostsPage extends StatefulWidget {
   const PostsPage({super.key});
@@ -40,9 +40,12 @@ class _PostsPageState extends State<PostsPage> {
           // Handy for demonstrating "error -> Retry -> loading -> success".
           if (kDebugMode)
             IconButton(
-              tooltip: PostsApi.kUseBadPath ? 'Error mode: ON' : 'Error mode: OFF',
+              tooltip:
+                  PostsApi.kUseBadPath ? 'Error mode: ON' : 'Error mode: OFF',
               icon: Icon(
-                PostsApi.kUseBadPath ? Icons.bug_report : Icons.bug_report_outlined,
+                PostsApi.kUseBadPath
+                    ? Icons.bug_report
+                    : Icons.bug_report_outlined,
               ),
               onPressed: () {
                 // Flip the error simulation switch and refetch immediately.
@@ -90,7 +93,8 @@ class _PostsPageState extends State<PostsPage> {
               onRefresh: () => context.read<PostsCubit>().fetch(),
               child: ListView.separated(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 itemCount: posts.length,
                 separatorBuilder: (_, __) => const SizedBox(height: 8),
                 itemBuilder: (context, i) => _PostCard(post: posts[i]),
@@ -136,7 +140,8 @@ class _PostCard extends StatelessWidget {
                 tag: 'post-title-${post.id}',
                 child: Text(
                   post.title,
-                  style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                  style: textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.w700),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -144,14 +149,16 @@ class _PostCard extends StatelessWidget {
               const SizedBox(height: 6),
               Text(
                 post.body,
-                style: textTheme.bodyMedium?.copyWith(color: Colors.black87),
+                style:
+                    textTheme.bodyMedium?.copyWith(color: Colors.black87),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 10),
               const Align(
                 alignment: Alignment.centerRight,
-                child: Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+                child: Icon(Icons.arrow_forward_ios,
+                    size: 14, color: Colors.grey),
               ),
             ],
           ),
@@ -177,13 +184,14 @@ class _SkeletonList extends StatelessWidget {
       itemBuilder: (context, _) {
         return Container(
           decoration: BoxDecoration(
-            color: cs.surfaceVariant.withOpacity(0.6),
+            // withOpacity -> withValues; surfaceVariant -> surfaceContainerHighest
+            color: cs.surfaceContainerHighest.withValues(alpha: 0.6),
             borderRadius: BorderRadius.circular(14),
           ),
           padding: const EdgeInsets.all(16),
-          child: Column(
+          child: const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               _SkeletonLine(widthFactor: 1.0, height: 18),
               SizedBox(height: 10),
               _SkeletonLine(widthFactor: 1.0, height: 12),
@@ -210,7 +218,8 @@ class _SkeletonLine extends StatelessWidget {
       child: Container(
         height: height,
         decoration: BoxDecoration(
-          color: cs.outlineVariant.withOpacity(0.5),
+          // withOpacity -> withValues (alpha)
+          color: cs.outlineVariant.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(8),
         ),
       ),
@@ -233,6 +242,7 @@ class _EmptyView extends StatelessWidget {
     );
   }
 }
+
 
 
 
