@@ -1,9 +1,5 @@
-// test/widget/widget_test.dart
-//
-// Widget tests for PostsPage. We mock the GetPosts use-case so the UI can
-// be verified without hitting the network. The page uses a real PostsCubit.
-// NOTE: We no longer assert on a spinner because the app uses a skeleton list;
-// instead we assert that the list appears on success and "Retry" appears on error.
+// Widget tests for PostsPage using a real PostsCubit and a mocked GetPosts.
+// The page fetches on initState, so we stub BEFORE pump and then pumpAndSettle.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,18 +11,20 @@ import 'package:flutter_posts_demo/features/posts/presentation/cubit/posts_cubit
 import 'package:flutter_posts_demo/features/posts/domain/usecases/get_posts.dart';
 import 'package:flutter_posts_demo/features/posts/domain/entities/post_entity.dart';
 
-/// Mock of the parameterless GetPosts call().
 class _MockGetPosts extends Mock implements GetPosts {}
 
 void main() {
   testWidgets('renders list after successful fetch', (tester) async {
-    // Arrange: the use-case returns one post.
+    // Arrange
     final mockGetPosts = _MockGetPosts();
-    when(() => mockGetPosts()).thenAnswer(
-      (_) async => [PostEntity(id: 1, userId: 1, title: 'Test Title', body: 'Test body')],
-    );
+    when(() => mockGetPosts(
+          start: any(named: 'start'),
+          limit: any(named: 'limit'),
+        )).thenAnswer((_) async => const [
+          PostEntity(id: 1, userId: 1, title: 'Test Title', body: 'Test body'),
+        ]);
 
-    // Pump PostsPage with a real PostsCubit.
+    // Act
     await tester.pumpWidget(
       MaterialApp(
         home: BlocProvider(
@@ -35,21 +33,23 @@ void main() {
         ),
       ),
     );
-
-    // PostsPage.initState() calls fetch(); wait for async/rebuilds to finish.
     await tester.pumpAndSettle();
 
-    // Assert: the fetched title is rendered; list exists (RefreshIndicator wraps ListView).
+    // Assert
     expect(find.text('Test Title'), findsOneWidget);
     expect(find.byType(RefreshIndicator), findsOneWidget);
     expect(find.byType(ListView), findsOneWidget);
   });
 
   testWidgets('shows error view with Retry when fetch fails', (tester) async {
-    // Arrange: the use-case throws.
+    // Arrange
     final mockGetPosts = _MockGetPosts();
-    when(() => mockGetPosts()).thenThrow(Exception('boom'));
+    when(() => mockGetPosts(
+          start: any(named: 'start'),
+          limit: any(named: 'limit'),
+        )).thenThrow(Exception('boom'));
 
+    // Act
     await tester.pumpWidget(
       MaterialApp(
         home: BlocProvider(
@@ -58,13 +58,12 @@ void main() {
         ),
       ),
     );
-
-    // Wait for the error state to render.
     await tester.pumpAndSettle();
 
-    // Assert: ErrorView appears (at least a "Retry" button is present).
+    // Assert
     expect(find.textContaining('Retry'), findsOneWidget);
   });
 }
+
 
 

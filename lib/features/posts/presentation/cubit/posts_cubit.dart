@@ -50,12 +50,18 @@ class PostsCubit extends Cubit<PostsState> {
 
     try {
       final posts = await _getPosts(start: _page * _limit, limit: _limit);
+
       if (posts.isEmpty) {
         _hasMore = false;
       } else {
         _all.addAll(posts);
         _page++;
+        // last page when result count < page size
+        if (posts.length < _limit) {
+          _hasMore = false;
+        }
       }
+
       emit(PostsLoaded(List.of(_all), hasMore: _hasMore));
     } catch (_) {
       emit(const PostsError('Oops! Failed to load posts. Please try again.'));
@@ -64,6 +70,7 @@ class PostsCubit extends Cubit<PostsState> {
     }
   }
 }
+
 
 
 

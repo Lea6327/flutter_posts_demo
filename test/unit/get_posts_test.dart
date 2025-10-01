@@ -1,9 +1,3 @@
-// test/unit/get_posts_test.dart
-//
-// Unit test for the GetPosts use-case.
-// We mock the PostsRepository so the test runs offline and focuses only on
-// verifying that the use-case returns data (or rethrows errors).
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -11,42 +5,48 @@ import 'package:flutter_posts_demo/features/posts/domain/entities/post_entity.da
 import 'package:flutter_posts_demo/features/posts/domain/repositories/posts_repository.dart';
 import 'package:flutter_posts_demo/features/posts/domain/usecases/get_posts.dart';
 
-/// Mock implementation of the repository dependency.
-class _MockPostsRepository extends Mock implements PostsRepository {}
+class MockPostsRepository extends Mock implements PostsRepository {}
 
 void main() {
-  late _MockPostsRepository repo;
-  late GetPosts getPosts;
+  late MockPostsRepository repo;
+  late GetPosts usecase;
 
   setUp(() {
-    repo = _MockPostsRepository();
-    getPosts = GetPosts(repo); // SUT (System Under Test)
+    repo = MockPostsRepository();
+    usecase = GetPosts(repo);
   });
 
   test('returns a list of PostEntity from repository', () async {
-    // Arrange
-    when(() => repo.getPosts()).thenAnswer(
-      (_) async => [PostEntity(id: 1, userId: 1, title: 'ok', body: 'body')],
-    );
+    final items = const [
+      PostEntity(id: 1, userId: 1, title: 't1', body: 'b1'),
+      PostEntity(id: 2, userId: 1, title: 't2', body: 'b2'),
+    ];
 
-    // Act
-    final result = await getPosts();
+    when(() => repo.getPosts(
+          start: any(named: 'start'),
+          limit: any(named: 'limit'),
+        )).thenAnswer((_) async => items);
 
-    // Assert
-    expect(result, isA<List<PostEntity>>());
-    expect(result.single.title, 'ok');
-    verify(() => repo.getPosts()).called(1);
+    final result = await usecase(start: 0, limit: 20);
+
+    expect(result, items);
+    verify(() => repo.getPosts(
+          start: 0,
+          limit: 20,
+        )).called(1);
   });
 
   test('rethrows repository exceptions', () async {
-    // Arrange
-    when(() => repo.getPosts()).thenThrow(Exception('boom'));
+    when(() => repo.getPosts(
+          start: any(named: 'start'),
+          limit: any(named: 'limit'),
+        )).thenThrow(Exception('boom'));
 
-    // Act & Assert
-    expect(() => getPosts(), throwsA(isA<Exception>()));
-    verify(() => repo.getPosts()).called(1);
+    expect(() => usecase(start: 0, limit: 20), throwsException);
   });
 }
+
+
 
 
 
