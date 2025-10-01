@@ -88,7 +88,7 @@ class AppTheme {
         ),
       ),
 
-      // Cards (use CardThemeData for your Flutter version)
+      // Cards 
       cardTheme: CardThemeData(
         elevation: 1.5,
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),

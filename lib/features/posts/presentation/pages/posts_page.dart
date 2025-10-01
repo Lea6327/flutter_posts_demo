@@ -1,6 +1,4 @@
-// lib/features/posts/presentation/pages/posts_page.dart
-//
-// Shows posts with loading / error (Retry) / success and infinite scroll.
+
 
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';

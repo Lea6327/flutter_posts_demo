@@ -1,9 +1,4 @@
 
-// lib/features/posts/presentation/pages/post_detail_page.dart
-//
-// Post details with a large SliverAppBar and clean M3 styling.
-// (Share button removed)
-
 import 'package:flutter/material.dart';
 import '../../domain/entities/post_entity.dart';
 
