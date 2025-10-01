@@ -1,128 +1,110 @@
 # Flutter Posts Demo
 
-A minimal Flutter app for the **Junior Flutter Developer Technical Assessment**.
+A minimal Flutter app built for the **Junior Flutter Developer Technical Assessment**.
 
 ---
 
-## Overview
+## ✨ Features
 
-* Fetch posts from a REST API
-* List → detail navigation (Hero transition)
-* State: **Loading (skeleton)** / **Error + Retry** / **Success**
+* Fetch posts from a public REST API (`jsonplaceholder.typicode.com/posts`)
+* List → detail navigation with **Hero transition**
+* Three states: **Loading (skeleton)** / **Error + Retry** / **Success**
 * **flutter_bloc (Cubit)** for state management
-* **Material 3** theme + custom styles
-* Unit + widget tests
-* Clean architecture (domain / data / presentation)
+* **Material 3** theme
+* Unit & widget tests
+* Clean architecture (domain / data / presentation layers)
 
 ---
 
-## Run
+## 🚀 Run the App
 
 ### Install dependencies
+
 ```bash
 flutter pub get
+```
 
-
-**Web（quickest）**
+### Run (Web example)
 
 ```bash
 flutter run -d chrome
 ```
 
-**iOS（example）**
+### Run (iOS example)
 
 ```bash
 open -a Simulator
 flutter devices
-flutter run -d "iPhone 17"   
+flutter run -d "iPhone 17"
 ```
 
-```
-
-**iOS pods (if needed)**
+If pods are needed:
 
 ```bash
 cd ios && pod install && cd ..
 ```
 
-> Open **`ios/Runner.xcworkspace`** in Xcode if running from Xcode.
+Or open `ios/Runner.xcworkspace` in Xcode.
 
 ---
 
-## Libraries
+## 🛠 Libraries
 
-* **Networking:** dio
-* **State:** flutter_bloc (Cubit)
-* **Share:** share_plus
-* **Testing:** flutter_test, mocktail
-
----
-
-## API
-
-* `GET https://jsonplaceholder.typicode.com/posts`
+* Networking: **dio**
+* State management: **flutter_bloc (Cubit)**
+* Share: **share_plus**
+* Testing: **flutter_test**, **mocktail**
 
 ---
 
-## Architecture
+## 📂 Project Structure
 
 ```
 lib/
  └─ features/posts/
-     ├─ domain/        # entities, abstract repositories, use cases (GetPosts)
-     ├─ data/          # dio client, API source, repository implementation
+     ├─ domain/        # entities, repositories, use cases
+     ├─ data/          # dio client, API source, repository impl
      └─ presentation/  # cubit + UI pages/widgets
-theme/                 # Material 3 themes (light/dark)
+theme/                 # Material 3 themes
 ```
 
 ---
 
-## Tests
+## 🧪 Tests
 
 ```bash
 flutter test
 ```
 
-* `test/unit/get_posts_test.dart` — use case unit test
-* `test/widget/widget_test.dart` — widget test (success + error/Retry)
+* `test/unit/get_posts_test.dart` → use case unit test
+* `test/widget/widget_test.dart` → widget test (success + error/Retry)
 
 ---
 
-## App States & Demo
+## 📱 States & Demo
 
-The app shows **three states** via `flutter_bloc`:
+### 1. Loading
 
-### 1) Loading
+* Triggered on app start / Retry / pull-to-refresh
+* Shows **skeleton placeholders**
 
-* Triggered on app start, **Retry**, or pull-to-refresh
-* Shows **skeleton placeholders** (no spinner)
+### 2. Error + Retry
 
-### 2) Error + Retry
-
-* On request failure: error icon, message, and a **Retry** button
+* On failure: error icon + message + Retry button
 * **Simulate errors (debug only):**
 
-  * Tap the **bug icon** (top-right) on the Posts screen to toggle *error ↔ normal* (auto-refetch)
-  * Or flip in code:
+  * Tap the **bug icon** in the top-right
+  * Or set `PostsApi.kUseBadPath = true` (requires **Hot Restart**)
 
-    ```dart
-    // lib/features/posts/data/sources/posts_api.dart
-    static bool kUseBadPath = true; // simulate error
-    ```
+### 3. Success
 
-    > Changing this static flag requires a **Hot Restart** (`Shift+R`), not just Hot Reload.
-
-### 3) Success
-
-* List of posts (title + body preview)
-* **Pull-to-refresh** support
-* Tap an item → **detail** screen (Hero transition, share action)
-
-**Quick demo flow:** Start app → tap bug icon → see **Error + Retry** → tap **Retry** → tap bug icon again → list refetches → **Success**.
+* Shows list of posts (title + preview body)
+* Pull-to-refresh support
+* Tap → detail page with Hero + share action
 
 ---
 
-## Useful Commands
+## 🔧 Useful Commands
 
 ```bash
 flutter analyze
@@ -130,10 +112,8 @@ dart format .
 flutter clean && flutter pub get
 ```
 
-**Hot Reload vs Hot Restart**
 
-* `r` = **Hot Reload**: does **not** re-run static/top-level initializers
-* `Shift+R` = **Hot Restart**: resets Dart VM and **does** re-run them (needed for `kUseBadPath`)
+
 
 
 
