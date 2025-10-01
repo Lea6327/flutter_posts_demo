@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../posts/domain/usecases/get_posts.dart';
-import '../../../posts/domain/entities/post_entity.dart'; 
+import '../../../posts/domain/entities/post_entity.dart';
 
 // ---------- States ----------
 abstract class PostsState {
@@ -16,8 +16,9 @@ class PostsLoading extends PostsState {
 }
 
 class PostsLoaded extends PostsState {
-  final List<PostEntity> posts; 
-  const PostsLoaded(this.posts);
+  final List<PostEntity> posts;
+  final bool hasMore;
+  const PostsLoaded(this.posts, {this.hasMore = true});
 }
 
 class PostsError extends PostsState {
@@ -30,16 +31,41 @@ class PostsCubit extends Cubit<PostsState> {
   final GetPosts _getPosts;
   PostsCubit(this._getPosts) : super(const PostsInitial());
 
-  Future<void> fetch() async {
-    emit(const PostsLoading());
+  int _page = 0;
+  final int _limit = 20;
+  final List<PostEntity> _all = [];
+  bool _busy = false;
+  bool _hasMore = true;
+
+  Future<void> fetch({bool refresh = false}) async {
+    if (_busy) return;
+    _busy = true;
+
+    if (refresh) {
+      _page = 0;
+      _all.clear();
+      _hasMore = true;
+      emit(const PostsLoading());
+    }
+
     try {
-      final posts = await _getPosts(); // Future<List<PostEntity>>
-      emit(PostsLoaded(posts));        
+      final posts = await _getPosts(start: _page * _limit, limit: _limit);
+      if (posts.isEmpty) {
+        _hasMore = false;
+      } else {
+        _all.addAll(posts);
+        _page++;
+      }
+      emit(PostsLoaded(List.of(_all), hasMore: _hasMore));
     } catch (_) {
       emit(const PostsError('Oops! Failed to load posts. Please try again.'));
+    } finally {
+      _busy = false;
     }
   }
 }
+
+
 
 
 

@@ -1,15 +1,12 @@
 // lib/features/posts/presentation/pages/posts_page.dart
 //
-// Shows the posts list with proper loading, error (with Retry), and success states.
-// Uses flutter_bloc (Cubit) for state management, Material 3 theming,
-// pull-to-refresh, a debug-only "simulate error" toggle, and a simple skeleton
-// loading list for nicer UX.
+// Shows posts with loading / error (Retry) / success and infinite scroll.
 
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../data/sources/posts_api.dart'; // For the debug error toggle
+import '../../data/sources/posts_api.dart' as api; // alias for debug toggle
 import '../../domain/entities/post_entity.dart';
 import '../cubit/posts_cubit.dart';
 import '../pages/post_detail_page.dart';
@@ -26,8 +23,7 @@ class _PostsPageState extends State<PostsPage> {
   @override
   void initState() {
     super.initState();
-    // First-load fetch (make sure you DON'T also call ..fetch() in BlocProvider)
-    context.read<PostsCubit>().fetch();
+    context.read<PostsCubit>().fetch(refresh: true);
   }
 
   @override
@@ -36,27 +32,22 @@ class _PostsPageState extends State<PostsPage> {
       appBar: AppBar(
         title: const Text('Posts'),
         actions: [
-          // Debug-only action to toggle the fake error switch at runtime.
-          // Handy for demonstrating "error -> Retry -> loading -> success".
+          // Debug-only: toggle simulated error and refetch
           if (kDebugMode)
             IconButton(
-              tooltip:
-                  PostsApi.kUseBadPath ? 'Error mode: ON' : 'Error mode: OFF',
+              tooltip: api.PostsApi.kUseBadPath ? 'Error mode: ON' : 'Error mode: OFF',
               icon: Icon(
-                PostsApi.kUseBadPath
-                    ? Icons.bug_report
-                    : Icons.bug_report_outlined,
+                api.PostsApi.kUseBadPath ? Icons.bug_report : Icons.bug_report_outlined,
               ),
               onPressed: () {
-                // Flip the error simulation switch and refetch immediately.
-                PostsApi.kUseBadPath = !PostsApi.kUseBadPath;
-                context.read<PostsCubit>().fetch();
+                api.PostsApi.kUseBadPath = !api.PostsApi.kUseBadPath;
+                context.read<PostsCubit>().fetch(refresh: true);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      PostsApi.kUseBadPath
-                          ? 'Error ON (Retry view will appear)'
-                          : 'Error OFF',
+                      api.PostsApi.kUseBadPath
+                          ? 'Simulating failures…'
+                          : 'Error mode off. Fetching…',
                     ),
                   ),
                 );
@@ -64,45 +55,62 @@ class _PostsPageState extends State<PostsPage> {
             ),
         ],
       ),
-
-      // BlocBuilder wires the UI to PostsCubit state.
       body: BlocBuilder<PostsCubit, PostsState>(
         builder: (context, state) {
-          // Initial & loading -> skeleton list (nicer than a spinner wall)
           if (state is PostsInitial || state is PostsLoading) {
             return const _SkeletonList();
           }
 
-          // Error -> friendly message + Retry button
+          // FIX: Retry now mirrors the bug toggle:
+          // if error mode is ON, turn it OFF first, then fetch.
           if (state is PostsError) {
             return ErrorView(
               message: state.message,
-              onRetry: () => context.read<PostsCubit>().fetch(),
+              onRetry: () {
+                if (kDebugMode && api.PostsApi.kUseBadPath) {
+                  api.PostsApi.kUseBadPath = false;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Error mode off. Retrying…')),
+                  );
+                }
+                context.read<PostsCubit>().fetch(refresh: true);
+              },
             );
           }
 
-          // Success -> list + pull-to-refresh
           if (state is PostsLoaded) {
-            final List<PostEntity> posts = state.posts;
+            final posts = state.posts;
             if (posts.isEmpty) return const _EmptyView();
 
-            // IMPORTANT:
-            // Use a single scrollable root (ListView) + AlwaysScrollable
-            // so pull-to-refresh works even if items < 1 screen.
             return RefreshIndicator(
-              onRefresh: () => context.read<PostsCubit>().fetch(),
-              child: ListView.separated(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                itemCount: posts.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 8),
-                itemBuilder: (context, i) => _PostCard(post: posts[i]),
+              onRefresh: () => context.read<PostsCubit>().fetch(refresh: true),
+              child: NotificationListener<ScrollNotification>(
+                onNotification: (sn) {
+                  if (state.hasMore &&
+                      sn.metrics.pixels >= sn.metrics.maxScrollExtent - 200) {
+                    context.read<PostsCubit>().fetch();
+                  }
+                  return false;
+                },
+                child: ListView.separated(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  itemCount: posts.length + (state.hasMore ? 1 : 0),
+                  separatorBuilder: (_, __) => const SizedBox(height: 8),
+                  itemBuilder: (context, i) {
+                    if (i >= posts.length) {
+                      return const Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    }
+                    return _PostCard(post: posts[i]);
+                  },
+                ),
               ),
             );
           }
 
-          // Defensive: always return a widget
           return const SizedBox.shrink();
         },
       ),
@@ -110,22 +118,19 @@ class _PostsPageState extends State<PostsPage> {
   }
 }
 
-/// ---------------- List item (card) ----------------
-
+/// Card for each post
 class _PostCard extends StatelessWidget {
   final PostEntity post;
   const _PostCard({required this.post});
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
+    final t = Theme.of(context).textTheme;
     return Card(
       elevation: 1.5,
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       child: InkWell(
-        // Navigate to the new, polished detail page
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => PostDetailPage(post: post)),
@@ -135,13 +140,11 @@ class _PostCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Hero matches the tag in the detail page for a smooth transition
               Hero(
                 tag: 'post-title-${post.id}',
                 child: Text(
                   post.title,
-                  style: textTheme.titleMedium
-                      ?.copyWith(fontWeight: FontWeight.w700),
+                  style: t.titleMedium?.copyWith(fontWeight: FontWeight.w700),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -149,16 +152,14 @@ class _PostCard extends StatelessWidget {
               const SizedBox(height: 6),
               Text(
                 post.body,
-                style:
-                    textTheme.bodyMedium?.copyWith(color: Colors.black87),
+                style: t.bodyMedium?.copyWith(color: Colors.black87),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 10),
               const Align(
                 alignment: Alignment.centerRight,
-                child: Icon(Icons.arrow_forward_ios,
-                    size: 14, color: Colors.grey),
+                child: Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
               ),
             ],
           ),
@@ -168,8 +169,7 @@ class _PostCard extends StatelessWidget {
   }
 }
 
-/// ---------------- Skeleton loading list ----------------
-
+/// Skeleton list for loading
 class _SkeletonList extends StatelessWidget {
   const _SkeletonList();
 
@@ -179,12 +179,11 @@ class _SkeletonList extends StatelessWidget {
     return ListView.separated(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(12),
-      itemCount: 8, // number of skeleton rows
+      itemCount: 8,
       separatorBuilder: (_, __) => const SizedBox(height: 8),
       itemBuilder: (context, _) {
         return Container(
           decoration: BoxDecoration(
-            // withOpacity -> withValues; surfaceVariant -> surfaceContainerHighest
             color: cs.surfaceContainerHighest.withValues(alpha: 0.6),
             borderRadius: BorderRadius.circular(14),
           ),
@@ -218,7 +217,6 @@ class _SkeletonLine extends StatelessWidget {
       child: Container(
         height: height,
         decoration: BoxDecoration(
-          // withOpacity -> withValues (alpha)
           color: cs.outlineVariant.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(8),
         ),
@@ -227,8 +225,7 @@ class _SkeletonLine extends StatelessWidget {
   }
 }
 
-/// ---------------- Empty state ----------------
-
+/// Empty view
 class _EmptyView extends StatelessWidget {
   const _EmptyView();
 
@@ -242,6 +239,13 @@ class _EmptyView extends StatelessWidget {
     );
   }
 }
+
+
+
+
+
+
+
 
 
 

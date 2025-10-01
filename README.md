@@ -18,9 +18,10 @@ A minimal Flutter app for the **Junior Flutter Developer Technical Assessment**.
 
 ## Run
 
+### Install dependencies
 ```bash
 flutter pub get
-```
+
 
 **Web（quickest）**
 
