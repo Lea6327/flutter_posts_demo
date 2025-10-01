@@ -100,7 +100,7 @@ flutter test
 
 * Shows list of posts (title + preview body)
 * Pull-to-refresh support
-* Tap → detail page with Hero + share action
+* Tap → detail page with Hero 
 
 ---
 
