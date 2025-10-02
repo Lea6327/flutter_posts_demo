@@ -1,10 +1,8 @@
-
-
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../data/sources/posts_api.dart' as api; // alias for debug toggle
+import '../../data/sources/posts_api.dart' as api; 
 import '../../domain/entities/post_entity.dart';
 import '../cubit/posts_cubit.dart';
 import '../pages/post_detail_page.dart';
@@ -59,7 +57,7 @@ class _PostsPageState extends State<PostsPage> {
             return const _SkeletonList();
           }
 
-          // FIX: Retry now mirrors the bug toggle:
+          
           // if error mode is ON, turn it OFF first, then fetch.
           if (state is PostsError) {
             return ErrorView(
@@ -237,7 +235,6 @@ class _EmptyView extends StatelessWidget {
     );
   }
 }
-
 
 
 

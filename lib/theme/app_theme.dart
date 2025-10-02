@@ -1,5 +1,3 @@
-// lib/theme/app_theme.dart
-//
 // Material 3 light/dark themes with a seed color.
 // - Uses CardThemeData (not CardTheme) for compatibility
 // - Avoids unnecessary casts

@@ -6,7 +6,7 @@ import 'features/posts/presentation/cubit/posts_cubit.dart';
 import 'features/posts/presentation/pages/posts_page.dart';
 
 import 'features/posts/data/sources/posts_api.dart';
-import 'features/posts/data/posts_repository_impl.dart';       
+import 'features/posts/data/posts_repository_impl.dart';
 import 'features/posts/domain/usecases/get_posts.dart';
 
 void main() {
@@ -26,8 +26,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false, 
       title: 'Posts Demo',
-      theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.indigo),
+      theme: ThemeData(
+        useMaterial3: true,
+        colorSchemeSeed: Colors.indigo,
+      ),
       home: BlocProvider(
         create: (_) => PostsCubit(getPosts),
         child: const PostsPage(),
@@ -35,6 +39,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
 
 
 
